@@ -17,11 +17,32 @@ fetch("https://api.coingecko.com/api/v3/coins/bitcoin")
     document.getElementById("crypto-top").innerHTML = `<img src=${data.image.small} alt="image of bitcoin logo" /> 
     <span>${data.name}</span>`
     document.getElementById("crypto-price").textContent = `Current price: ${data.market_data.current_price.nok} NOK`
-    //can remove seconds from the clock by removing "second:"numeric". I just like to see it updating in seconds. 
+     
     setInterval(() =>{
         document.getElementById("time-id").textContent = new Date().toLocaleTimeString('en-US', { hour12: true, 
-            hour: "numeric", minute: "numeric",second: "numeric"});
+            hour: "numeric", minute: "numeric"});
     },1000)
     
 })
 .catch(err => console.error(err))
+
+navigator.geolocation.getCurrentPosition(getWeather, errorHandling)
+
+//Seems the getweather is very slow at times
+function getWeather(position){
+    fetch(`https://apis.scrimba.com/openweathermap/data/2.5/weather?lat=${position.coords.latitude}&lon=${position.coords.longitude}&units=metric`)
+    .then(res => res.json())
+    .then(data => {
+        const iconUrl = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`
+        document.getElementById("weather").innerHTML += `
+        <img src=${iconUrl} />
+        <p>${Math.round(data.main.temp)}º</p>
+        <p class="city">${data.name}</p>`
+        
+        console.log(data)
+        
+    })
+}
+function errorHandling(err){
+    console.error(err)
+}
